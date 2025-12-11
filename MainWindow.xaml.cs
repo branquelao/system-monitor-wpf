@@ -10,6 +10,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using SystemMonitorWpf.Services;
+using System.Diagnostics;
+using System.Collections.Generic;
+using SystemMonitorWPF.Services;
 
 namespace SystemMonitorWPF
 {
@@ -30,6 +33,7 @@ namespace SystemMonitorWPF
         {
             UpdateCpu();
             UpdateRam();
+            UpdateProcesses();
         }
 
         private void UpdateCpu()
@@ -49,6 +53,29 @@ namespace SystemMonitorWPF
 
             TxtRam.Text = $"RAM: {percent:F2}% ({usedMb:F2} / ({totalMb:F2}%)";
             BarRam.Value = percent;
+        }
+
+        private void UpdateProcesses()
+        {
+            var list = new List<ProcessInfo>();
+
+            foreach(var p in Process.GetProcesses())
+            {
+                try
+                {
+
+                    list.Add(new ProcessInfo
+                    {
+                        PID = p.Id,
+                        Name = p.ProcessName,
+                        CpuUsage = 0,
+                        MemoryUsage = Math.Round(p.WorkingSet64 / 1024.0 / 1024.0, 2)
+                    });
+                }
+                catch { }
+            }
+
+            GridProcesses.ItemsSource = list;
         }
     }
 }
