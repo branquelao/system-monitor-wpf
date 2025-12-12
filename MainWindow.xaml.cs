@@ -69,6 +69,9 @@ namespace SystemMonitorWPF
             {
                 try
                 {
+                    if (!ShouldShowProcess(p))
+                        continue;
+
                     double cpu = _cpuTracker.GetCpu(p);
                     double memory = Math.Round(p.WorkingSet64 / 1024.0 / 1024.0, 2);
 
@@ -91,6 +94,48 @@ namespace SystemMonitorWPF
                     }
                 }
                 catch { }
+            }
+        }
+
+        private bool ShouldShowProcess(Process p)
+        {
+            try
+            {
+                string name = p.ProcessName.ToLower();
+
+                if(string.IsNullOrWhiteSpace(name))
+                    return false;
+
+                string[] systemNames = new[]
+                {
+                    "system",
+                    "idle",
+                    "registry",
+                    "smss",
+                    "csrss",
+                    "wininit",
+                    "winlogon",
+                    "services",
+                    "lsass",
+                    "svchost",
+                    "fontdrvhost",
+                    "memory compression"
+                };
+
+                if (systemNames.Contains(name))
+                    return false;
+                
+                if(p.WorkingSet64 < 5 * 1024 * 1024 && _cpuTracker.GetCpu(p) < 0.1)
+                    return false;
+
+                if(p.StartTime.AddSeconds(2) > DateTime.Now)
+                    return false;
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
