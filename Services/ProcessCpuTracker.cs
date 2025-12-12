@@ -23,7 +23,7 @@ namespace SystemMonitorWpf.Services
                 if (!_lastCpuTimes.ContainsKey(p.Id))
                 {
                     _lastCpuTimes[p.Id] = current;
-                    return 0; // primeira leitura → 0%
+                    return 0;
                 }
 
                 TimeSpan last = _lastCpuTimes[p.Id];
@@ -31,8 +31,8 @@ namespace SystemMonitorWpf.Services
 
                 _lastCpuTimes[p.Id] = current;
 
-                double cpuPercent = (delta.TotalMilliseconds / 1000.0) // delta por segundo
-                                    / _coreCount * 100.0;
+                double cpuPercent = (delta.TotalMilliseconds / 1000.0)
+                                  / _coreCount * 100.0;
 
                 return Math.Round(cpuPercent, 2);
             }

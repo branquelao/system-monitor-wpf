@@ -1,29 +1,29 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using SystemMonitorWpf.Services;
 using System.Diagnostics;
-using System.Collections.Generic;
+
+using SystemMonitorWpf.Services;
 using SystemMonitorWPF.Services;
 
 namespace SystemMonitorWPF
 {
     public partial class MainWindow : Window
     {
+        public ObservableCollection<ProcessInfo> Processes { get; set; }
+            = new ObservableCollection<ProcessInfo>();
+
         private readonly DispatcherTimer _timer;
         private readonly ProcessCpuTracker _cpuTracker = new ProcessCpuTracker();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            DataContext = this;
+
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
@@ -50,35 +50,48 @@ namespace SystemMonitorWPF
 
             double totalMb = ram.Total / 1024.0 / 1024.0;
             double usedMb = ram.Used / 1024.0 / 1024.0;
-            double percent = ram.Percent;
 
-            TxtRam.Text = $"RAM: {percent:F2}% ({usedMb:F2} / ({totalMb:F2})";
-            BarRam.Value = percent;
+            TxtRam.Text = $"RAM: {ram.Percent:F2}% ({usedMb:F2} / {totalMb:F2} MB)";
+            BarRam.Value = ram.Percent;
         }
 
         private void UpdateProcesses()
         {
-            var list = new List<ProcessInfo>();
+            var running = Process.GetProcesses();
+            var toRemove = Processes
+                .Where(pr => !running.Any(p => p.Id == pr.PID))
+                .ToList();
 
-            foreach (var p in Process.GetProcesses())
+            foreach (var r in toRemove)
+                Processes.Remove(r);
+
+            foreach (var p in running)
             {
                 try
                 {
                     double cpu = _cpuTracker.GetCpu(p);
+                    double memory = Math.Round(p.WorkingSet64 / 1024.0 / 1024.0, 2);
 
-                    list.Add(new ProcessInfo
+                    var existing = Processes.FirstOrDefault(x => x.PID == p.Id);
+
+                    if (existing == null)
                     {
-                        PID = p.Id,
-                        Name = p.ProcessName,
-                        CpuUsage = cpu,
-                        MemoryUsage = Math.Round(p.WorkingSet64 / 1024.0 / 1024.0, 2)
-                    });
+                        Processes.Add(new ProcessInfo
+                        {
+                            PID = p.Id,
+                            Name = p.ProcessName,
+                            CpuUsage = cpu,
+                            MemoryUsage = memory
+                        });
+                    }
+                    else
+                    {
+                        existing.CpuUsage = cpu;
+                        existing.MemoryUsage = memory;
+                    }
                 }
                 catch { }
             }
-
-            GridProcesses.ItemsSource = list;
         }
-
     }
 }
