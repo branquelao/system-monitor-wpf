@@ -19,6 +19,7 @@ namespace SystemMonitorWPF
     public partial class MainWindow : Window
     {
         private readonly DispatcherTimer _timer;
+        private readonly ProcessCpuTracker _cpuTracker = new ProcessCpuTracker();
 
         public MainWindow()
         {
@@ -51,7 +52,7 @@ namespace SystemMonitorWPF
             double usedMb = ram.Used / 1024.0 / 1024.0;
             double percent = ram.Percent;
 
-            TxtRam.Text = $"RAM: {percent:F2}% ({usedMb:F2} / ({totalMb:F2}%)";
+            TxtRam.Text = $"RAM: {percent:F2}% ({usedMb:F2} / ({totalMb:F2})";
             BarRam.Value = percent;
         }
 
@@ -59,16 +60,17 @@ namespace SystemMonitorWPF
         {
             var list = new List<ProcessInfo>();
 
-            foreach(var p in Process.GetProcesses())
+            foreach (var p in Process.GetProcesses())
             {
                 try
                 {
+                    double cpu = _cpuTracker.GetCpu(p);
 
                     list.Add(new ProcessInfo
                     {
                         PID = p.Id,
                         Name = p.ProcessName,
-                        CpuUsage = 0,
+                        CpuUsage = cpu,
                         MemoryUsage = Math.Round(p.WorkingSet64 / 1024.0 / 1024.0, 2)
                     });
                 }
@@ -77,5 +79,6 @@ namespace SystemMonitorWPF
 
             GridProcesses.ItemsSource = list;
         }
+
     }
 }
