@@ -7,6 +7,7 @@ using System.Diagnostics;
 
 using SystemMonitorWpf.Services;
 using SystemMonitorWPF.Services;
+using System.Windows.Controls;
 
 namespace SystemMonitorWPF
 {
@@ -18,6 +19,7 @@ namespace SystemMonitorWPF
         private readonly DispatcherTimer _timer;
         private readonly ProcessCpuTracker _cpuTracker = new ProcessCpuTracker();
 
+        public ProcessInfo SelectedProcess { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -136,6 +138,31 @@ namespace SystemMonitorWPF
             catch
             {
                 return false;
+            }
+        }
+
+        private void KillProcess(object sender, RoutedEventArgs e)
+        {
+            if (SelectedProcess == null)
+            {
+                MessageBox.Show("No process selected.",
+                                "Notice",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                var p = Process.GetProcessById(SelectedProcess.PID);
+                p.Kill();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Failed to kill process: {ex.Message}",
+                                "Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
             }
         }
     }

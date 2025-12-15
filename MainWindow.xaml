@@ -80,6 +80,29 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="KillButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#C0392B"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Padding" Value="6,2"></Setter>
+            <Setter Property="FontSize" Value="11"></Setter>
+            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Setter Property="Background" Value="#C0392B"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center">
+                            </ContentPresenter>
+                            
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
     </Window.Resources>
 
 
@@ -90,6 +113,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock Text="Monitor for CPU and RAM"
@@ -119,11 +143,11 @@
             <ProgressBar x:Name="BarRam"
                          Minimum="0" Maximum="100" Value="0"/>
         </StackPanel>
-
-        <!-- PROCESS GRID -->
+        
         <DataGrid x:Name="GridProcesses"
                   Grid.Row="3"
                   ItemsSource="{Binding Processes}"
+                  SelectedItem="{Binding SelectedProcess}"
                   AutoGenerateColumns="False"
                   HeadersVisibility="Column"
                   CanUserAddRows="False"
@@ -138,6 +162,16 @@
             </DataGrid.Columns>
         </DataGrid>
 
+        <Button Grid.Row="4"
+                Content="End Task"
+                Style="{StaticResource KillButtonStyle}"
+                Height="25"
+                Width="65"
+                Margin="0,15,0,0"
+                HorizontalAlignment="Right"
+                Click="KillProcess">
+        </Button>
+        
     </Grid>
 
 </Window>
