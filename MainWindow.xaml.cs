@@ -20,6 +20,7 @@ namespace SystemMonitorWPF
 
         private readonly DispatcherTimer _timer;
         private readonly ProcessCpuTracker _cpuTracker = new ProcessCpuTracker();
+        private readonly Dictionary<string, int> _sortStates = new();
         public ICollectionView ProcessesView { get; set; }
         public ProcessInfo SelectedProcess { get; set; }
         public MainWindow()
@@ -174,6 +175,64 @@ namespace SystemMonitorWPF
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
             }
+        }
+
+        private void GridProcessesSorting(object sender, DataGridSortingEventArgs e)
+        {
+            e.Handled = true;
+
+            var view = ProcessesView;
+            string property = e.Column.SortMemberPath;
+
+            if (string.IsNullOrEmpty(property))
+                return;
+
+            if (!_sortStates.ContainsKey(property))
+                _sortStates[property] = 0;
+
+            _sortStates[property] = (_sortStates[property] + 1) % 3;
+
+            view.SortDescriptions.Clear();
+
+            switch (_sortStates[property])
+            {
+                case 1: // Descending
+                    view.SortDescriptions.Add(
+                        new SortDescription(property, ListSortDirection.Descending));
+                    e.Column.SortDirection = ListSortDirection.Descending;
+                    break;
+
+                case 2: // Ascending
+                    view.SortDescriptions.Add(
+                        new SortDescription(property, ListSortDirection.Ascending));
+                    e.Column.SortDirection = ListSortDirection.Ascending;
+                    break;
+
+                default: // Reset
+                    ResetDefaultSort();
+                    e.Column.SortDirection = null;
+                    break;
+            }
+
+            foreach (var col in GridProcesses.Columns)
+            {
+                if (col != e.Column)
+                    col.SortDirection = null;
+            }
+
+            view.Refresh();
+        }
+
+        private void ResetDefaultSort()
+        {
+            ProcessesView.SortDescriptions.Clear();
+
+            ProcessesView.SortDescriptions.Add(
+                new SortDescription(nameof(ProcessInfo.CpuUsage), ListSortDirection.Descending));
+            ProcessesView.SortDescriptions.Add(
+                new SortDescription(nameof(ProcessInfo.MemoryUsage), ListSortDirection.Descending));
+            ProcessesView.SortDescriptions.Add(
+                new SortDescription(nameof(ProcessInfo.Name), ListSortDirection.Ascending));
         }
     }
 }
