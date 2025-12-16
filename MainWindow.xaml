@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SystemMonitorWPF"
+        xmlns:services="clr-namespace:SystemMonitorWPF.Services"
         mc:Ignorable="d"
         Title="System Monitor" 
         Height="500" Width="400"
@@ -12,6 +13,8 @@
         >
 
     <Window.Resources>
+        <services:HighValueToBoolConverter x:Key="HighCpuConverter" Threshold="20"/>
+        <services:HighValueToBoolConverter x:Key="HighRamConverter" Threshold="500"/>
 
         <Color x:Key="BackgroundColor">#1E1E1E</Color>
         <Color x:Key="ForegroundColor">#E6E6E6</Color>
@@ -150,7 +153,6 @@
                             </Trigger>
 
                         </ControlTemplate.Triggers>
-
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -186,6 +188,32 @@
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="#3BAAF5"/>
                 </Trigger>
+
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="CpuCellStyle"
+           TargetType="DataGridCell"
+           BasedOn="{StaticResource SortedColumnCellStyle}">
+            <Style.Triggers>
+
+                <DataTrigger Binding="{Binding CpuUsage, Converter={StaticResource HighCpuConverter}}"
+                     Value="True">
+                    <Setter Property="Background" Value="#332020"/>
+                </DataTrigger>
+
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RamCellStyle"
+           TargetType="DataGridCell"
+           BasedOn="{StaticResource SortedColumnCellStyle}">
+            <Style.Triggers>
+
+                <DataTrigger Binding="{Binding MemoryUsage, Converter={StaticResource HighRamConverter}}"
+                     Value="True">
+                    <Setter Property="Background" Value="#332020"/>
+                </DataTrigger>
 
             </Style.Triggers>
         </Style>
@@ -244,8 +272,10 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="PID" Binding="{Binding PID}" Width="80"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" SortMemberPath="Name"/>
-                <DataGridTextColumn Header="CPU (%)" Binding="{Binding CpuUsage, StringFormat=N2}" Width="65" SortMemberPath="CpuUsage"/>
-                <DataGridTextColumn Header="RAM (MB)" Binding="{Binding MemoryUsage, StringFormat=N2}" Width="65" SortMemberPath="MemoryUsage"/>
+                <DataGridTextColumn Header="CPU (%)" Binding="{Binding CpuUsage, StringFormat=N2}" Width="65" 
+                                    SortMemberPath="CpuUsage" CellStyle="{StaticResource CpuCellStyle}"/>
+                <DataGridTextColumn Header="RAM (MB)" Binding="{Binding MemoryUsage, StringFormat=N2}" Width="65" 
+                                    SortMemberPath="MemoryUsage" CellStyle="{StaticResource RamCellStyle}"/>
             </DataGrid.Columns>
         </DataGrid>
 

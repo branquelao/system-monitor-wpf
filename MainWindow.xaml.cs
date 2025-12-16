@@ -41,6 +41,8 @@ namespace SystemMonitorWPF
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
             _timer.Start();
+
+            var test = new HighValueToBoolConverter();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
