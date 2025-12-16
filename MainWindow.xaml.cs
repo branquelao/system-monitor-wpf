@@ -8,6 +8,8 @@ using System.Diagnostics;
 using SystemMonitorWpf.Services;
 using SystemMonitorWPF.Services;
 using System.Windows.Controls;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace SystemMonitorWPF
 {
@@ -18,13 +20,21 @@ namespace SystemMonitorWPF
 
         private readonly DispatcherTimer _timer;
         private readonly ProcessCpuTracker _cpuTracker = new ProcessCpuTracker();
-
+        public ICollectionView ProcessesView { get; set; }
         public ProcessInfo SelectedProcess { get; set; }
         public MainWindow()
         {
             InitializeComponent();
 
             DataContext = this;
+
+            ProcessesView = CollectionViewSource.GetDefaultView(Processes);
+            ProcessesView.SortDescriptions.Add(
+                new SortDescription(nameof(ProcessInfo.CpuUsage), ListSortDirection.Descending));
+            ProcessesView.SortDescriptions.Add(
+                new SortDescription(nameof(ProcessInfo.MemoryUsage), ListSortDirection.Descending));
+            ProcessesView.SortDescriptions.Add(
+                new SortDescription(nameof(ProcessInfo.Name), ListSortDirection.Ascending));
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
