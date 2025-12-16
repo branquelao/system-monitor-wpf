@@ -121,18 +121,16 @@
                                       VerticalAlignment="Center"
                                       Margin="0,0,6,0"
                                       Data="M 0 0 L 8 0 L 4 5 Z"
-                                      RenderTransformOrigin="0.5,0.5"/>  
+                                      RenderTransformOrigin="0.5,0.5"/>
                             </Grid>
                         </Border>
 
                         <ControlTemplate.Triggers>
 
-                            <!-- Hover -->
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#333333"/>
                             </Trigger>
 
-                            <!-- Ascending -->
                             <Trigger Property="SortDirection" Value="Ascending">
                                 <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
                                 <Setter TargetName="SortArrow" Property="RenderTransform">
@@ -142,7 +140,6 @@
                                 </Setter>
                             </Trigger>
 
-                            <!-- Descending -->
                             <Trigger Property="SortDirection" Value="Descending">
                                 <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
                                 <Setter TargetName="SortArrow" Property="RenderTransform">
@@ -157,10 +154,42 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-
-
         </Style>
-        
+
+        <Style x:Key="SortedColumnCellStyle" TargetType="DataGridCell">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+
+            <Style.Triggers>
+                <DataTrigger
+                    Binding="{Binding
+                        RelativeSource={RelativeSource Self},
+                        Path=Column.SortDirection}"
+                    Value="Ascending">
+                    
+                    <Setter Property="Background" Value="#1F2A33"/>
+                </DataTrigger>
+
+                <DataTrigger
+                    Binding="{Binding
+                        RelativeSource={RelativeSource Self},
+                        Path=Column.SortDirection}"
+                    Value="Descending">
+                    
+                    <Setter Property="Background" Value="#1F2A33"/>
+                </DataTrigger>
+
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#333333"/>
+                </Trigger>
+
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#3BAAF5"/>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>
+
     </Window.Resources>
 
     <Grid Margin="16" Background="{StaticResource BackgroundBrush}">
@@ -209,7 +238,8 @@
                   Sorting="GridProcessesSorting"
                   IsReadOnly="True"
                   AlternationCount="2"
-                  ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}">
+                  ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                  CellStyle="{StaticResource SortedColumnCellStyle}">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="PID" Binding="{Binding PID}" Width="80"/>
