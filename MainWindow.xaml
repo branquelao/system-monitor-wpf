@@ -158,62 +158,65 @@
             </Setter>
         </Style>
 
-        <Style x:Key="SortedColumnCellStyle" TargetType="DataGridCell">
+        <Style x:Key="ProcessCellStyle"
+            TargetType="DataGridCell">
+
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
 
             <Style.Triggers>
-                <DataTrigger
-                    Binding="{Binding
-                        RelativeSource={RelativeSource Self},
-                        Path=Column.SortDirection}"
-                    Value="Ascending">
-                    
+
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},
+                                       Path=Column.SortDirection}"
+                     Value="Ascending">
                     <Setter Property="Background" Value="#1F2A33"/>
                 </DataTrigger>
 
-                <DataTrigger
-                    Binding="{Binding
-                        RelativeSource={RelativeSource Self},
-                        Path=Column.SortDirection}"
-                    Value="Descending">
-                    
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},
+                                       Path=Column.SortDirection}"
+                     Value="Descending">
                     <Setter Property="Background" Value="#1F2A33"/>
                 </DataTrigger>
-
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#333333"/>
-                </Trigger>
-
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#3BAAF5"/>
-                </Trigger>
-
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="CpuCellStyle"
-           TargetType="DataGridCell"
-           BasedOn="{StaticResource SortedColumnCellStyle}">
-            <Style.Triggers>
 
                 <DataTrigger Binding="{Binding CpuUsage, Converter={StaticResource HighCpuConverter}}"
                      Value="True">
-                    <Setter Property="Background" Value="#332020"/>
+                    <Setter Property="Background" Value="#402020"/>
                 </DataTrigger>
-
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="RamCellStyle"
-           TargetType="DataGridCell"
-           BasedOn="{StaticResource SortedColumnCellStyle}">
-            <Style.Triggers>
 
                 <DataTrigger Binding="{Binding MemoryUsage, Converter={StaticResource HighRamConverter}}"
                      Value="True">
-                    <Setter Property="Background" Value="#332020"/>
+                    <Setter Property="Background" Value="#402020"/>
                 </DataTrigger>
+
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding CpuUsage, Converter={StaticResource HighCpuConverter}}"
+                           Value="True"/>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow},
+                                              Path=IsMouseOver}"
+                           Value="True"/>
+                    </MultiDataTrigger.Conditions>
+
+                    <Setter Property="Background" Value="#603030"/>
+                </MultiDataTrigger>
+
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding MemoryUsage, Converter={StaticResource HighRamConverter}}"
+                           Value="True"/>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow},
+                                              Path=IsMouseOver}"
+                           Value="True"/>
+                    </MultiDataTrigger.Conditions>
+
+                    <Setter Property="Background" Value="#603030"/>
+                </MultiDataTrigger>
+
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#3BAAF5"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
 
             </Style.Triggers>
         </Style>
@@ -267,15 +270,15 @@
                   IsReadOnly="True"
                   AlternationCount="2"
                   ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
-                  CellStyle="{StaticResource SortedColumnCellStyle}">
+                  CellStyle="{StaticResource ProcessCellStyle}">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="PID" Binding="{Binding PID}" Width="80"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" SortMemberPath="Name"/>
                 <DataGridTextColumn Header="CPU (%)" Binding="{Binding CpuUsage, StringFormat=N2}" Width="65" 
-                                    SortMemberPath="CpuUsage" CellStyle="{StaticResource CpuCellStyle}"/>
+                                    SortMemberPath="CpuUsage"/>
                 <DataGridTextColumn Header="RAM (MB)" Binding="{Binding MemoryUsage, StringFormat=N2}" Width="65" 
-                                    SortMemberPath="MemoryUsage" CellStyle="{StaticResource RamCellStyle}"/>
+                                    SortMemberPath="MemoryUsage"/>
             </DataGrid.Columns>
         </DataGrid>
 
