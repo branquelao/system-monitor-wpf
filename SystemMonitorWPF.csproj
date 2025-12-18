@@ -15,4 +15,10 @@
     <PackageReference Include="System.Management" Version="10.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Views\MainWindow.xaml">
+      <Generator></Generator>
+    </Page>
+  </ItemGroup>
+
 </Project>
