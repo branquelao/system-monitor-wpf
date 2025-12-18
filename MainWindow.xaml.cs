@@ -216,7 +216,10 @@ namespace SystemMonitorWPF
                     break;
             }
 
-            foreach (var col in GridProcesses.Columns)
+            var grid = sender as DataGrid;
+            if (grid == null) return;
+
+            foreach (var col in grid.Columns)
             {
                 if (col != e.Column)
                     col.SortDirection = null;
