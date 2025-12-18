@@ -237,7 +237,8 @@
         HorizontalAlignment="Center"
         Margin="0,0,0,12"/>
 
-        <TabControl Grid.Row="1"
+        <TabControl x:Name="MainTabControl"
+                Grid.Row="1"
                 Background="{StaticResource BackgroundBrush}"
                 BorderThickness="0">
 
@@ -246,6 +247,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <StackPanel Margin="0,0,0,10">
@@ -260,7 +262,8 @@
                             Value="{Binding Cpu.CpuUsage}" />
                     </StackPanel>
 
-                    <DataGrid Grid.Row="1"
+                    <DataGrid x:Name="CpuGrid" 
+                          Grid.Row="1"
                           ItemsSource="{Binding ProcessesView}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
@@ -282,6 +285,15 @@
                                             Width="80"/>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <Button Grid.Row="2"
+                        Content="End Task"
+                        Style="{StaticResource KillButtonStyle}"
+                        Height="25"
+                        Width="65"
+                        Margin="0,15,0,0"
+                        HorizontalAlignment="Right"
+                        Click="KillProcess"/>
                 </Grid>
             </TabItem>
 
@@ -290,6 +302,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <StackPanel Margin="0,0,0,10">
@@ -304,7 +317,8 @@
                             Value="{Binding Memory.RamUsage}" />
                     </StackPanel>
 
-                    <DataGrid Grid.Row="1"
+                    <DataGrid x:Name="RamGrid" 
+                          Grid.Row="1"
                           ItemsSource="{Binding ProcessesView}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
@@ -326,6 +340,15 @@
                                             Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <Button Grid.Row="2"
+                        Content="End Task"
+                        Style="{StaticResource KillButtonStyle}"
+                        Height="25"
+                        Width="65"
+                        Margin="0,15,0,0"
+                        HorizontalAlignment="Right"
+                        Click="KillProcess"/>
                 </Grid>
             </TabItem>
         </TabControl>
