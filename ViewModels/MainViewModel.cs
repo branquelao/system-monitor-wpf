@@ -10,8 +10,11 @@ using SystemMonitorWPF.Services;
 
 namespace SystemMonitorWPF.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel
     {
+        public CpuViewModel Cpu { get; } = new();
+        public MemoryViewModel Memory { get; } = new();
+
         public ObservableCollection<ProcessInfo> Processes { get; }
             = new ObservableCollection<ProcessInfo>();
 
@@ -19,39 +22,6 @@ namespace SystemMonitorWPF.ViewModels
 
         private readonly DispatcherTimer _timer;
         private readonly ProcessCpuTracker _cpuTracker = new();
-
-        private double _cpuUsage;
-        public double CpuUsage
-        {
-            get => _cpuUsage;
-            set
-            {
-                _cpuUsage = value;
-                OnPropertyChanged(nameof(CpuUsage));
-            }
-        }
-
-        private double _ramPercent;
-        public double RamPercent
-        {
-            get => _ramPercent;
-            set
-            {
-                _ramPercent = value;
-                OnPropertyChanged(nameof(RamPercent));
-            }
-        }
-
-        private string _ramText;
-        public string RamText
-        {
-            get => _ramText;
-            set
-            {
-                _ramText = value;
-                OnPropertyChanged(nameof(RamText));
-            }
-        }
 
         public MainViewModel()
         {
@@ -69,30 +39,8 @@ namespace SystemMonitorWPF.ViewModels
                 Interval = TimeSpan.FromSeconds(1)
             };
 
-            _timer.Tick += (_, _) =>
-            {
-                UpdateCpu();
-                UpdateRam();
-                UpdateProcesses();
-            };
-
+            _timer.Tick += (_, _) => UpdateProcesses();
             _timer.Start();
-        }
-
-        private void UpdateCpu()
-        {
-            CpuUsage = CpuInfo.GetCpuUsage();
-        }
-
-        private void UpdateRam()
-        {
-            var ram = MemoryInfo.GetRam();
-
-            double totalMb = ram.Total / 1024.0 / 1024.0;
-            double usedMb = ram.Used / 1024.0 / 1024.0;
-
-            RamPercent = ram.Percent;
-            RamText = $"{usedMb:F2} / {totalMb:F2} MB";
         }
 
         private void UpdateProcesses()

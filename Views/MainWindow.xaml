@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SystemMonitorWPF"
+        xmlns:local="clr-namespace:SystemMonitorWPF.Views"
         xmlns:services="clr-namespace:SystemMonitorWPF.Services"
         mc:Ignorable="d"
         Title="System Monitor" 
@@ -250,14 +250,14 @@
 
                     <StackPanel Margin="0,0,0,10">
                         <TextBlock
-                            Text="{Binding CpuUsage, StringFormat=CPU: {0:F2}%}"
+                            Text="{Binding Cpu.CpuText}"
                             FontSize="14"
                             Margin="0,0,0,4"/>
 
                         <ProgressBar
                             Minimum="0"
                             Maximum="100"
-                            Value="{Binding CpuUsage}" />
+                            Value="{Binding Cpu.CpuUsage}" />
                     </StackPanel>
 
                     <DataGrid Grid.Row="1"
@@ -294,14 +294,14 @@
 
                     <StackPanel Margin="0,0,0,10">
                         <TextBlock
-                            Text="{Binding RamPercent, StringFormat=RAM: {0:F2}%}"
+                            Text="{Binding Memory.RamText}"
                             FontSize="14"
                             Margin="0,0,0,4"/>
 
                         <ProgressBar
                             Minimum="0"
                             Maximum="100"
-                            Value="{Binding RamPercent}" />
+                            Value="{Binding Memory.RamUsage}" />
                     </StackPanel>
 
                     <DataGrid Grid.Row="1"
